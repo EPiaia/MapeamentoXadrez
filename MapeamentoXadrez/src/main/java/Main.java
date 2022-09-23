@@ -2,7 +2,12 @@
 import classes.Nodo;
 import classes.Posicao;
 import classes.Tarefa;
+import java.awt.Color;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.List;
+import javax.swing.JButton;
+import javax.swing.JFrame;
 import javax.swing.JPanel;
 import utils.Pecas;
 
@@ -30,15 +35,17 @@ public class Main {
 
         Nodo nodo = new Nodo(new Posicao(posX, posY));
         Tarefa tarefa = new Tarefa("A");
-        tarefa.setPeca(Pecas.RAINHA);
+        tarefa.setPeca(Pecas.TORRE);
         tarefa.setNodo(nodo);
         nodo.setTarefa(tarefa);
         nodos[nodo.getPosicao().getPosX()][nodo.getPosicao().getPosY()] = "X";
 
-        List<Posicao> posicoes = tarefa.getPosicoesPossiveis(largura, altura, 2);
-        for (Posicao posicao : posicoes) {
-            nodos[posicao.getPosX()][posicao.getPosY()] = "1";
-        }
+//        List<Posicao> posicoes = tarefa.getPosicoesPossiveis(largura, altura, 2);
+//        for (Posicao posicao : posicoes) {
+//            nodos[posicao.getPosX()][posicao.getPosY()] = "1";
+//        }
+        Posicao posicao = tarefa.getPosicaoEscolhida(largura, altura, 1);
+        nodos[posicao.getPosX()][posicao.getPosY()] = "1";
 
         for (int y = altura - 1; y >= 0; y--) {
             for (int x = 0; x < largura; x++) {
