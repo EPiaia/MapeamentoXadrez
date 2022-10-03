@@ -75,7 +75,7 @@ public class Main {
             int qtdVezes = Integer.parseInt(test.get("QTD").toString());
 
             String app = test.get("APP").toString();
-            System.out.println("------------- INÍCIO " + app + " -------------");
+            System.out.println("------------- INÍCIO MAPEAMENTO " + app + " -------------");
             String caminhoJsonApp = "TrabalhoMapeamento/Applications/" + app + ".json";
 
             JSONParser parserApp = new JSONParser();
@@ -128,9 +128,25 @@ public class Main {
                 }
                 tarefaAnterior = tarefaCriada;
             }
-            System.out.println("------------- FIM " + app + " -------------");
+            System.out.println("------------- FIM MAPEAMENTO " + app + " -------------");
             System.out.println("");
+
+            System.out.println("------------- INÍCIO TESTE " + app + " -------------");
+            System.out.println("");
+            tarefasIt = tarefasApp.iterator();
+
+            while (tarefasIt.hasNext()) {
+                JSONObject tarefaApp = tarefasIt.next();
+                Tarefa tarefaOrigem = MapeamentoUtil.getTarefa(tarefaApp.get("tarefa_origem").toString(), nodos);
+                Tarefa tarefaDestino = MapeamentoUtil.getTarefa(tarefaApp.get("tarefa_destino").toString(), nodos);
+
+                System.out.println("Enviando mensagem de " + tarefaOrigem.getIdentificacao() + " (" + tarefaOrigem.getNodo().getPosicao().getPosX() + ", "
+                        + tarefaOrigem.getNodo().getPosicao().getPosY() + ") para " + tarefaDestino.getIdentificacao() + " ("
+                        + tarefaDestino.getNodo().getPosicao().getPosX() + ", " + tarefaDestino.getNodo().getPosicao().getPosY() + ")");
+
+                MapeamentoUtil.enviarMensagem(nodos, tarefaOrigem, tarefaDestino);
+            }
+
         }
     }
-
 }

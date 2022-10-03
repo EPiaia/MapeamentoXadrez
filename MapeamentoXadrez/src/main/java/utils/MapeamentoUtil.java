@@ -2,8 +2,12 @@ package utils;
 
 import classes.Nodo;
 import classes.Posicao;
+import classes.Tarefa;
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  *
@@ -40,5 +44,32 @@ public class MapeamentoUtil {
             System.out.println("");
         }
         System.out.println("");
+    }
+
+    public static Tarefa getTarefa(String tarefaId, Nodo[][] nodos) {
+        Set<Tarefa> tarefasComId = new HashSet<>();
+
+        int largura = nodos.length;
+        int altura = nodos[0].length;
+        for (int y = altura - 1; y >= 0; y--) {
+            for (int x = 0; x < largura; x++) {
+                Nodo nodo = nodos[x][y];
+                for (Tarefa tarefa : nodo.getTarefas()) {
+                    if (tarefa.getIdentificacao().charAt(0) == tarefaId.charAt(0)) {
+                        tarefasComId.add(tarefa);
+                    }
+                }
+            }
+        }
+
+        return tarefasComId.stream().min(Comparator.comparing(
+                Tarefa::getNodo, (n1, n2) -> {
+                    return n1.getQuantidadePacotes().compareTo(n2.getQuantidadePacotes());
+                })).orElse(null);
+
+    }
+
+    public static void enviarMensagem(Nodo[][] nodos, Tarefa tarefaOrigem, Tarefa tarefaDestino) {
+
     }
 }

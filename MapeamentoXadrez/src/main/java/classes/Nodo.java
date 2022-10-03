@@ -16,6 +16,7 @@ public class Nodo {
     private Nodo nodoDireita;
     private Nodo nodoCima;
     private List<Tarefa> tarefas = new ArrayList<>();
+    private Integer quantidadePacotes = 0;
 
     public Nodo() {
     }
@@ -70,6 +71,14 @@ public class Nodo {
 
     public void setTarefas(List<Tarefa> tarefas) {
         this.tarefas = tarefas;
+    }
+
+    public Integer getQuantidadePacotes() {
+        return quantidadePacotes;
+    }
+
+    public void setQuantidadePacotes(Integer quantidadePacotes) {
+        this.quantidadePacotes = quantidadePacotes;
     }
 
     @Override
