@@ -14,6 +14,11 @@ public enum Pecas {
         }
 
         @Override
+        public String getNome() {
+            return "Peão";
+        }
+
+        @Override
         public int[] getFormasMovimento() {
             return new int[]{Constantes.VERTICAL};
         }
@@ -39,6 +44,11 @@ public enum Pecas {
         }
 
         @Override
+        public String getNome() {
+            return "Torre";
+        }
+
+        @Override
         public int[] getFormasMovimento() {
             return new int[]{Constantes.VERTICAL, Constantes.HORIZONTAL};
         }
@@ -57,6 +67,11 @@ public enum Pecas {
         @Override
         public int getCodigo() {
             return 3;
+        }
+
+        @Override
+        public String getNome() {
+            return "Cavalo";
         }
 
         @Override
@@ -81,6 +96,11 @@ public enum Pecas {
         }
 
         @Override
+        public String getNome() {
+            return "Bispo";
+        }
+
+        @Override
         public int[] getFormasMovimento() {
             return new int[]{Constantes.DIAGONAL};
         }
@@ -99,6 +119,11 @@ public enum Pecas {
         @Override
         public int getCodigo() {
             return 5;
+        }
+
+        @Override
+        public String getNome() {
+            return "Rainha";
         }
 
         @Override
@@ -123,6 +148,11 @@ public enum Pecas {
         }
 
         @Override
+        public String getNome() {
+            return "Rei";
+        }
+
+        @Override
         public int[] getFormasMovimento() {
             return new int[]{Constantes.HORIZONTAL, Constantes.VERTICAL, Constantes.DIAGONAL};
         }
@@ -140,6 +170,8 @@ public enum Pecas {
     };
 
     public abstract int getCodigo();
+
+    public abstract String getNome();
 
     public abstract int[] getFormasMovimento();
 

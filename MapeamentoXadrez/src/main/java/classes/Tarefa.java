@@ -6,6 +6,7 @@ import java.util.Objects;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 import utils.Constantes;
+import utils.MapeamentoUtil;
 import utils.Pecas;
 
 /**
@@ -49,7 +50,7 @@ public class Tarefa {
         this.nodo = nodo;
     }
 
-    private List<Posicao> getPosicoesPossiveis(int largura, int altura, int rodada) {
+    public List<Posicao> getPosicoesPossiveis(int largura, int altura, int rodada) {
         List<Posicao> posicoes = new ArrayList<>();
         if (nodo == null || peca == null) {
             return posicoes;
@@ -264,7 +265,6 @@ public class Tarefa {
         }
 
         if (formaMovimento == Constantes.HORIZONTAL) {
-            System.out.println("Horizontal");
             int lado;
 
             if (possuiPosicoesAEsquerda && possuiPosicoesADireita) {
@@ -276,34 +276,29 @@ public class Tarefa {
             }
 
             if (lado == 0) { // Se for a esquerda
-                System.out.println("A esquerda");
                 if (this.peca.getQtdCasasMovPrincipal(rodada) == null) {
                     int maxCasas = posXAtual;
                     if (maxCasas == 1) {
                         maxCasas++;
                     }
                     int qtdCasas = ThreadLocalRandom.current().nextInt(1, maxCasas);
-                    System.out.println("Andar " + qtdCasas + " casas");
                     return posicoesPossiveis.stream().filter(pos -> pos.getPosX() == (posXAtual - qtdCasas)).findFirst().get();
                 } else {
                     return posicoesPossiveis.stream().filter(pos -> pos.getPosX() < posXAtual).findFirst().get();
                 }
             } else { // Se for a direita
-                System.out.println("A Direita");
                 if (this.peca.getQtdCasasMovPrincipal(rodada) == null) {
                     int maxCasas = largura - posXAtual;
                     if (maxCasas == 1) {
                         maxCasas++;
                     }
                     int qtdCasas = ThreadLocalRandom.current().nextInt(1, maxCasas);
-                    System.out.println("Andar " + qtdCasas + " casas");
                     return posicoesPossiveis.stream().filter(pos -> pos.getPosX() == (posXAtual + qtdCasas)).findFirst().get();
                 } else {
                     return posicoesPossiveis.stream().filter(pos -> pos.getPosX() < posXAtual).findFirst().get();
                 }
             }
         } else if (formaMovimento == Constantes.VERTICAL) {
-            System.out.println("Vertical");
             int lado;
 
             if (possuiPosicoesAcima && possuiPosicoesAbaixo) {
@@ -315,27 +310,23 @@ public class Tarefa {
             }
 
             if (lado == 0) { // Se for abaixo
-                System.out.println("Abaixo");
                 if (this.peca.getQtdCasasMovPrincipal(rodada) == null) {
                     int maxCasas = posYAtual;
                     if (maxCasas == 1) {
                         maxCasas++;
                     }
                     int qtdCasas = ThreadLocalRandom.current().nextInt(1, maxCasas);
-                    System.out.println("Andar " + qtdCasas + " casas");
                     return posicoesPossiveis.stream().filter(pos -> pos.getPosY() == (posYAtual - qtdCasas)).findFirst().get();
                 } else {
                     return posicoesPossiveis.stream().filter(pos -> pos.getPosY() < posYAtual).findFirst().get();
                 }
             } else { // Se for acima
-                System.out.println("Acima");
                 if (this.peca.getQtdCasasMovPrincipal(rodada) == null) {
                     int maxCasas = altura - posYAtual;
                     if (maxCasas == 1) {
                         maxCasas++;
                     }
                     int qtdCasas = ThreadLocalRandom.current().nextInt(1, maxCasas);
-                    System.out.println("Andar " + qtdCasas + " casas");
                     return posicoesPossiveis.stream().filter(pos -> pos.getPosY() == (posYAtual + qtdCasas)).findFirst().get();
                 } else {
                     return posicoesPossiveis.stream().filter(pos -> pos.getPosY() > posYAtual).findFirst().get();
@@ -442,18 +433,37 @@ public class Tarefa {
     }
 
     public void atribuirTarefaANodo(Nodo[][] nodos, int rodada, int qtdTarefasProc) {
+        System.out.println("");
+        System.out.println("------------------ TAREFA " + getIdentificacao() + " ------------------");
+        System.out.println("Peça: " + getPeca().getNome());
+        System.out.println("Possíveis Posições: ");
+        System.out.println("");
+
         int largura = nodos.length;
         int altura = nodos[0].length;
+
+        MapeamentoUtil.printarMatriz(nodos, qtdTarefasProc, getPosicoesPossiveis(largura, altura, rodada), getNodo().getPosicao());
+
         Posicao posicaoEscolhida = getPosicaoEscolhida(largura, altura, rodada);
 
+        System.out.println("");
+        System.out.println("Posição Escolhida: (" + posicaoEscolhida.getPosX() + ", " + posicaoEscolhida.getPosY() + ")");
+        System.out.println("");
+
         Nodo nodoPosicao = nodos[posicaoEscolhida.getPosX()][posicaoEscolhida.getPosY()];
-        this.nodo = nodoPosicao;
         nodoPosicao.getTarefas().add(this);
-        if (nodoPosicao.getTarefas().size() == qtdTarefasProc) {
-            Tarefa tarefaAntiga = nodoPosicao.getTarefas().get(0);
-            nodoPosicao.getTarefas().remove(tarefaAntiga);
+        this.nodo = nodoPosicao;
+        if (this.nodo.getTarefas().size() > qtdTarefasProc) {
+            Tarefa tarefaAntiga = this.nodo.getTarefas().get(0);
+            System.out.println("A posição escolhida já contém " + qtdTarefasProc + " tarefa(s), reatribuindo tarefa " + tarefaAntiga.getIdentificacao());
+            this.nodo.getTarefas().remove(tarefaAntiga);
+            tarefaAntiga.setPeca(Pecas.getPecaAleatoria());
             tarefaAntiga.atribuirTarefaANodo(nodos, rodada, qtdTarefasProc);
         }
+
+        MapeamentoUtil.printarMatriz(nodos, qtdTarefasProc, null, null);
+
+        System.out.println("------------------ FIM TAREFA " + getIdentificacao() + " ------------------");
     }
 
     @Override

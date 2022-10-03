@@ -14,6 +14,7 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+import utils.MapeamentoUtil;
 import utils.Pecas;
 
 /**
@@ -74,6 +75,7 @@ public class Main {
             int qtdVezes = Integer.parseInt(test.get("QTD").toString());
 
             String app = test.get("APP").toString();
+            System.out.println("------------- INÍCIO " + app + " -------------");
             String caminhoJsonApp = "TrabalhoMapeamento/Applications/" + app + ".json";
 
             JSONParser parserApp = new JSONParser();
@@ -81,6 +83,8 @@ public class Main {
             JSONObject jsonApp = (JSONObject) objApp;
             JSONArray tarefasApp = (JSONArray) jsonApp.get("grafo_tarefas");
             Iterator<JSONObject> tarefasIt = tarefasApp.iterator();
+
+            MapeamentoUtil.printarMatriz(nodos, tarefasProc, null, null);
 
             while (tarefasIt.hasNext()) {
                 JSONObject tarefaApp = tarefasIt.next();
@@ -104,6 +108,13 @@ public class Main {
                 }
             }
 
+            System.out.println("");
+            System.out.println(tarefasCriadas.size() + " tarefa(s) para mapear: ");
+            for (Tarefa tarefaCriada : tarefasCriadas) {
+                System.out.println(tarefaCriada.getIdentificacao());
+            }
+            System.out.println("");
+
             primeira = true;
             Tarefa tarefaAnterior = null;
             for (Tarefa tarefaCriada : tarefasCriadas) {
@@ -117,8 +128,9 @@ public class Main {
                 }
                 tarefaAnterior = tarefaCriada;
             }
+            System.out.println("------------- FIM " + app + " -------------");
+            System.out.println("");
         }
-
     }
 
 }
