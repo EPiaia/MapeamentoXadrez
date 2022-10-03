@@ -1,5 +1,7 @@
 package classes;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -13,7 +15,7 @@ public class Nodo {
     private Nodo nodoBaixo;
     private Nodo nodoDireita;
     private Nodo nodoCima;
-    private Tarefa tarefa;
+    private List<Tarefa> tarefas = new ArrayList<>();
 
     public Nodo() {
     }
@@ -62,12 +64,12 @@ public class Nodo {
         this.nodoCima = nodoCima;
     }
 
-    public Tarefa getTarefa() {
-        return tarefa;
+    public List<Tarefa> getTarefas() {
+        return tarefas;
     }
 
-    public void setTarefa(Tarefa tarefa) {
-        this.tarefa = tarefa;
+    public void setTarefas(List<Tarefa> tarefas) {
+        this.tarefas = tarefas;
     }
 
     @Override

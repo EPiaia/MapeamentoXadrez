@@ -1,10 +1,10 @@
 package classes;
 
-import static java.lang.Math.random;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.stream.Collectors;
 import utils.Constantes;
 import utils.Pecas;
 
@@ -49,7 +49,7 @@ public class Tarefa {
         this.nodo = nodo;
     }
 
-    public List<Posicao> getPosicoesPossiveis(int largura, int altura, int rodada) {
+    private List<Posicao> getPosicoesPossiveis(int largura, int altura, int rodada) {
         List<Posicao> posicoes = new ArrayList<>();
         if (nodo == null || peca == null) {
             return posicoes;
@@ -245,7 +245,7 @@ public class Tarefa {
         return posicoes;
     }
 
-    public Posicao getPosicaoEscolhida(int largura, int altura, int rodada) {
+    private Posicao getPosicaoEscolhida(int largura, int altura, int rodada) {
         List<Posicao> posicoesPossiveis = getPosicoesPossiveis(largura, altura, rodada);
         int posYAtual = this.nodo.getPosicao().getPosY();
         int posXAtual = this.nodo.getPosicao().getPosX();
@@ -342,12 +342,118 @@ public class Tarefa {
                 }
             }
         } else if (formaMovimento == Constantes.DIAGONAL) {
+            List<Posicao> posicoesLadoEscolhido = new ArrayList<>();
+            int direcao;
+            if (possuiPosicoesAcima && possuiPosicoesAbaixo) {
+                direcao = ThreadLocalRandom.current().nextInt(2);
+            } else if (possuiPosicoesAbaixo) {
+                direcao = 0;
+            } else {
+                direcao = 1;
+            }
 
+            boolean possuiPosDiagDireita = false;
+            boolean possuiPosDiagEsquerda = false;
+            int direcaoLado;
+            // Se para baixo
+            if (direcao == 0) {
+                possuiPosDiagDireita = posicoesPossiveis.stream().filter(pos -> pos.getPosY() < posYAtual && pos.getPosX() > posXAtual).count() > 0;
+                possuiPosDiagEsquerda = posicoesPossiveis.stream().filter(pos -> pos.getPosY() < posYAtual && pos.getPosX() < posXAtual).count() > 0;
+            } else { // Para cima
+                possuiPosDiagDireita = posicoesPossiveis.stream().filter(pos -> pos.getPosY() > posYAtual && pos.getPosX() > posXAtual).count() > 0;
+                possuiPosDiagEsquerda = posicoesPossiveis.stream().filter(pos -> pos.getPosY() > posYAtual && pos.getPosX() < posXAtual).count() > 0;
+            }
+
+            if (possuiPosDiagDireita && possuiPosDiagEsquerda) {
+                direcaoLado = ThreadLocalRandom.current().nextInt(2);
+            } else if (possuiPosDiagEsquerda) {
+                direcaoLado = 0;
+            } else {
+                direcaoLado = 1;
+            }
+
+            if (direcao == 0) {
+                if (direcaoLado == 0) {
+                    posicoesLadoEscolhido = posicoesPossiveis.stream().filter(pos -> pos.getPosY() < posYAtual && pos.getPosX() < posXAtual).collect(Collectors.toList());
+                } else {
+                    posicoesLadoEscolhido = posicoesPossiveis.stream().filter(pos -> pos.getPosY() < posYAtual && pos.getPosX() > posXAtual).collect(Collectors.toList());
+                }
+            } else {
+                if (direcaoLado == 0) {
+                    posicoesLadoEscolhido = posicoesPossiveis.stream().filter(pos -> pos.getPosY() > posYAtual && pos.getPosX() < posXAtual).collect(Collectors.toList());
+                } else {
+                    posicoesLadoEscolhido = posicoesPossiveis.stream().filter(pos -> pos.getPosY() > posYAtual && pos.getPosX() > posXAtual).collect(Collectors.toList());
+                }
+            }
+
+            if (this.peca.getQtdCasasMovPrincipal(rodada) == null) {
+                int qtdMaxCasas = posicoesLadoEscolhido.size();
+                qtdMaxCasas = qtdMaxCasas == 1 ? 2 : qtdMaxCasas;
+                int qtdCasas = ThreadLocalRandom.current().nextInt(1, qtdMaxCasas);
+
+                if (direcaoLado == 0) { // Esquerda
+                    return posicoesLadoEscolhido.stream().filter(pos -> pos.getPosX() == posXAtual - qtdCasas).findFirst().get();
+                } else { // Direita
+                    return posicoesLadoEscolhido.stream().filter(pos -> pos.getPosX() == posXAtual + qtdCasas).findFirst().get();
+                }
+            } else {
+                return posicoesLadoEscolhido.get(0);
+            }
         } else if (formaMovimento == Constantes.L) {
+            List<Posicao> posicoesMovimento = new ArrayList<>();
+            int qtdCasasMovP = this.peca.getQtdCasasMovPrincipal(rodada);
+            possuiPosicoesAcima = posicoesPossiveis.stream().filter(pos -> pos.getPosY() == posYAtual + qtdCasasMovP).count() > 0;
+            possuiPosicoesAbaixo = posicoesPossiveis.stream().filter(pos -> pos.getPosY() == posYAtual - qtdCasasMovP).count() > 0;
+            possuiPosicoesADireita = posicoesPossiveis.stream().filter(pos -> pos.getPosX() == posXAtual + qtdCasasMovP).count() > 0;
+            possuiPosicoesAEsquerda = posicoesPossiveis.stream().filter(pos -> pos.getPosX() == posXAtual - qtdCasasMovP).count() > 0;
 
+            List<Integer> possiveisMovimentos = new ArrayList<>();
+            if (possuiPosicoesAcima) {
+                possiveisMovimentos.add(1);
+            }
+            if (possuiPosicoesAbaixo) {
+                possiveisMovimentos.add(2);
+            }
+            if (possuiPosicoesADireita) {
+                possiveisMovimentos.add(3);
+            }
+            if (possuiPosicoesAEsquerda) {
+                possiveisMovimentos.add(4);
+            }
+            int movimento = possiveisMovimentos.get(ThreadLocalRandom.current().nextInt(possiveisMovimentos.size()));
+            if (movimento == 1) { // Para cima
+                posicoesMovimento = posicoesPossiveis.stream().filter(pos -> pos.getPosY() == posYAtual + qtdCasasMovP).collect(Collectors.toList());
+            } else if (movimento == 2) { // Para baixo
+                posicoesMovimento = posicoesPossiveis.stream().filter(pos -> pos.getPosY() == posYAtual - qtdCasasMovP).collect(Collectors.toList());
+            } else if (movimento == 3) { // Para a direita
+                posicoesMovimento = posicoesPossiveis.stream().filter(pos -> pos.getPosX() == posXAtual + qtdCasasMovP).collect(Collectors.toList());
+            } else { // Para a esquerda
+                posicoesMovimento = posicoesPossiveis.stream().filter(pos -> pos.getPosX() == posXAtual - qtdCasasMovP).collect(Collectors.toList());
+            }
+
+            if (posicoesMovimento.size() > 1) {
+                int lado = ThreadLocalRandom.current().nextInt(posicoesMovimento.size());
+                return posicoesMovimento.get(lado);
+            } else {
+                return posicoesMovimento.get(0);
+            }
         }
-
         return null;
+    }
+
+    public void atribuirTarefaANodo(Nodo[][] nodos, int rodada, int qtdTarefasProc) {
+        int largura = nodos.length;
+        int altura = nodos[0].length;
+        Posicao posicaoEscolhida = getPosicaoEscolhida(largura, altura, rodada);
+
+        Nodo nodoPosicao = nodos[posicaoEscolhida.getPosX()][posicaoEscolhida.getPosY()];
+        this.nodo = nodoPosicao;
+        nodoPosicao.getTarefas().add(this);
+        if (nodoPosicao.getTarefas().size() == qtdTarefasProc) {
+            Tarefa tarefaAntiga = nodoPosicao.getTarefas().get(0);
+            nodoPosicao.getTarefas().remove(tarefaAntiga);
+            tarefaAntiga.atribuirTarefaANodo(nodos, rodada, qtdTarefasProc);
+        }
     }
 
     @Override
